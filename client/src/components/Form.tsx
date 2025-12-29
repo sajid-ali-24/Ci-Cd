@@ -67,7 +67,7 @@ const Form = () => {
   return (
     <Card className="w-full sm:max-w-md">
       <CardHeader>
-        <CardTitle>Add Your Task</CardTitle>
+        <CardTitle>Add Task</CardTitle>
         <CardDescription>
           manage your microtasks properly here.
         </CardDescription>

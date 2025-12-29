@@ -36,13 +36,63 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.check-changes.outputs.client_changed == 'true'
     steps:
-      - name: Nice Working
-        run: echo "Client Changes Detected"
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Creating Docker Image
+        run: |
+          cd client
+          docker build -t saadu0224/client .
+      - name: Pushing Docker Image
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u $"DOCKER_USERNAME" --password-stdin
+          docker push saadu0224/client
+          docker logout
+      - name: SSH login and Deploy
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PASS: ${{ secrets.SERVER_PASS }}
+        run: |
+          apt-get update -y
+          apt-get install -y sshpass
+          sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP
+          'sudo docker pull saadu0224/client &&
+            cd ~ &&
+            sudo docker  compose up -d --no-deps --build client && exit'
 
   server:
     needs: check-changes
     runs-on: ubuntu-latest
     if: needs.check-changes.outputs.server_changed == 'true'
     steps:
-      - name: Nice Working
-        run: echo "Server Changes Detected"
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Creating Docker Image
+        run: |
+          cd server
+          docker build -t saadu0224/server .
+      - name: Pushing Docker Image
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u $"DOCKER_USERNAME" --password-stdin
+          docker push saadu0224/server
+          docker logout
+      - name: SSH login and Deploy
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PASS: ${{ secrets.SERVER_PASS }}
+        run: |
+          apt-get update -y
+          apt-get install -y sshpass
+          sshpass -p "$SERVER_PASS" ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP
+          'sudo docker pull saadu0224/server &&
+            cd ~ &&
+            sudo docker  compose up -d --no-deps --build server && exit'
