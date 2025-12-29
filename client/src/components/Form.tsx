@@ -45,7 +45,7 @@ const Form = () => {
   });
   async function onSubmit(data: z.infer<typeof formSchema>) {
     const { title, description } = data;
-    const resp = await fetch("http://localhost:5000/note", {
+    const resp = await fetch("http://143.110.199.5:5000/note", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

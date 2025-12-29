@@ -8,7 +8,7 @@ const Notes = () => {
   const fetchNotes = async () => {
     setLoading(true);
     try {
-      const resp = await fetch("http://localhost:5000/notes", {
+      const resp = await fetch("http://143.110.199.5:5000/notes", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
